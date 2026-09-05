@@ -1,0 +1,37 @@
+<html>
+<head>
+<style>
+  body > div {
+    font-size: 20px;
+    padding: 1em;
+    color: black;
+    user-select: none;
+  }
+</style>
+<script>
+  const div_count = 1000;
+
+  const getRandomBackgroundColor = () => {
+    let r, g, b, brightness;
+    do {
+      r = Math.floor(Math.random() * 256);
+      g = Math.floor(Math.random() * 256);
+      b = Math.floor(Math.random() * 256);
+      brightness = 0.299 * r + 0.587 * g + 0.114 * b;
+    } while (brightness < 127);
+    return `rgb(${r}, ${g}, ${b})`;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    for (let i=0; i < div_count; i++) {
+      const $div = document.createElement('div');
+      $div.style.backgroundColor = getRandomBackgroundColor();
+      $div.textContent = '' + (i+1);
+      document.body.appendChild($div);
+    }
+  })
+</script>
+</head>
+<body>
+</body>
+</html>

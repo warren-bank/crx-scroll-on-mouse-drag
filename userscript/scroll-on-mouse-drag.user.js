@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Scroll on Mouse Drag
 // @description  Click and drag the mouse to scroll the page. Intended for mobile web browsers that don't automatically map from mouse events to touch events. (ex: Chrome 58+, WebView, WebMonkey)
-// @version      2.0.0
+// @version      2.1.0
 // @match        *://*/*
 // @icon         https://uxwing.com/wp-content/themes/uxwing/download/hand-gestures/touch-icon.png
 // @run-at       document-start
@@ -108,6 +108,8 @@
   };
 
   var onMouseUp = function() {
+    if (!isMouseDown) return;
+
     isMouseDown = false;
     prevPoint = null;
 
@@ -216,14 +218,37 @@
       break;
   }
 
-  var initDocument = function() {
-    document.removeEventListener('mousedown', onMouseDown, true);
-    document.removeEventListener('mousemove', onMouseMove, true);
-    document.removeEventListener('mouseup',   onMouseUp,   true);
+  var onMouseLeave = function() {
+    if (!isMouseDown) return;
 
-    document.addEventListener('mousedown', onMouseDown, true);
-    document.addEventListener('mousemove', onMouseMove, true);
-    document.addEventListener('mouseup',   onMouseUp,   true);
+    onMouseUp();
+    isMouseDown = true;
+  }
+
+  var onMouseEnter = function(event) {
+    if (!isMouseDown) return;
+
+    if ((event.buttons & 1) === 0) {
+      // left button is no-longer down
+      isMouseDown = false;
+    }
+    else {
+      onMouseDown(event);
+    }
+  }
+
+  var initDocument = function() {
+    document.removeEventListener('mousedown',  onMouseDown,  true);
+    document.removeEventListener('mousemove',  onMouseMove,  true);
+    document.removeEventListener('mouseup',    onMouseUp,    true);
+    document.removeEventListener('mouseleave', onMouseLeave, true);
+    document.removeEventListener('mouseenter', onMouseEnter, true);
+
+    document.addEventListener('mousedown',  onMouseDown,  true);
+    document.addEventListener('mousemove',  onMouseMove,  true);
+    document.addEventListener('mouseup',    onMouseUp,    true);
+    document.addEventListener('mouseleave', onMouseLeave, true);
+    document.addEventListener('mouseenter', onMouseEnter, true);
   };
 
   initDocument();
